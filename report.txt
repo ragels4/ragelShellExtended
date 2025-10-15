@@ -20,3 +20,5 @@ Service Spooler log entry:
 2025-10-15 15:09 Spooler: Started -> Running
 RDP: suletud
 Port 7000: suletud
+Reaalajakaitse: Kiirskenni algatati
+Erand: erand lisatud
