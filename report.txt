@@ -13,3 +13,5 @@ Files in folder C:\Lab\A:
   task3.txt - Last modified: 10/15/2025 14:50:20
   task4.txt - Last modified: 10/15/2025 14:50:20
   task5.txt - Last modified: 10/15/2025 14:50:20
+Created username.txt and wrote username ragels4.
+roll: mitte student
