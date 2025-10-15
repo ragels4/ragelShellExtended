@@ -22,3 +22,4 @@ RDP: suletud
 Port 7000: suletud
 Reaalajakaitse: Kiirskenni algatati
 Erand: erand lisatud
+4624 sündmus: aeg=10/15/2025 15:19:41, konto=SYSTEM
