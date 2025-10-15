@@ -1,0 +1,25 @@
+
+$reportFile = "C:\Lab\report.txt"
+$exceptionPath = "C:\Lab\B"
+$realTimeProtection = Get-MpPreference | Select-Object -ExpandProperty DisableRealtimeMonitoring
+$report = ""
+
+if ($realTimeProtection -eq $false) {
+    Start-MpScan -ScanType QuickScan
+    $report += "Reaalajakaitse on lubatud, kiirskenni algatati.`n"
+} else {
+    $report += "Reaalajakaitse on väljas, skanni ei algatata.`n"
+}
+
+$exceptions = Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
+
+if ($exceptions -contains $exceptionPath) {
+    $report += "Erand olemas"
+} else {
+    Add-MpPreference -ExclusionPath $exceptionPath
+    $report += "Erand lisatud"
+}
+
+$report | Out-File -FilePath $reportFile
+
+Get-Content -Path $reportFile

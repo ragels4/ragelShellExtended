@@ -1,0 +1,39 @@
+$serviceName = "Spooler"
+$logFolder = "C:\Lab\logs"
+$logFile = Join-Path $logFolder "svc.log"
+$reportFile = "C:\Lab\report.txt"
+
+if (-not (Test-Path $logFolder)) {
+    New-Item -Path $logFolder -ItemType Directory | Out-Null
+}
+
+$service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
+$action = ""
+
+if ($service.Status -eq "Running") {
+    Restart-Service -Name $serviceName
+    $action = "taaskäivitati"
+} elseif ($service.Status -eq "Stopped") {
+    Start-Service -Name $serviceName
+    $action = "käivitati"
+} else {
+    $action = "olek: $($service.Status)"
+}
+
+Start-Sleep -Seconds 3
+
+$service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
+$logLine = "$(Get-Date -Format 'yyyy-MM-dd HH:mm') Spooler: $action -> $($service.Status)"
+
+if (-not (Test-Path $logFile)) {
+    New-Item -Path $logFile -ItemType File | Out-Null
+}
+
+Add-Content -Path $logFile -Value $logLine
+
+$lastLogLines = Get-Content -Path $logFile | Select-Object -Last 5
+
+$report = $lastLogLines -join "`n"
+$report | Out-File -FilePath $reportFile
+
+Get-Content -Path $reportFile

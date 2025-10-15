@@ -1,0 +1,67 @@
+$folderA = "C:\Lab\A"
+$reportFile = "C:\Lab\report.txt"
+$logFolder = "C:\Lab\logs"
+$healthLog = Join-Path $logFolder "health.log"
+
+if (-not (Test-Path $logFolder)) {
+    New-Item -Path $logFolder -ItemType Directory | Out-Null
+}
+
+$spooler = Get-Service -Name "Spooler" -ErrorAction SilentlyContinue
+$defenderRTP = -not (Get-MpPreference).DisableRealtimeMonitoring
+$port3389Open = $false
+$tcpClient = New-Object System.Net.Sockets.TcpClient
+try {
+    $tcpClient.Connect("localhost", 3389)
+    $tcpClient.Close()
+    $port3389Open = $true
+} catch {}
+
+$score = 0
+if ($spooler.Status -eq "Running") { $score++ }
+if ($defenderRTP) { $score++ }
+if (-not $port3389Open) { $score++ }
+
+if ($score -eq 3) { $status = "OK" }
+elseif ($score -eq 2) { $status = "WARN" }
+else { $status = "FAIL" }
+
+$actions = @()
+
+if ($spooler.Status -ne "Running") {
+    if ($spooler.Status -eq "Stopped") {
+        Start-Service -Name "Spooler"
+        $actions += "Spooler started"
+    } else {
+        Restart-Service -Name "Spooler"
+        $actions += "Spooler restarted"
+    }
+}
+
+if ($port3389Open) {
+    $actions += "Soovitus: RDP piirata või keelata"
+}
+
+if (-not $defenderRTP) {
+    $actions += "Soovitus: lubada reaalajakaitse"
+}
+
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+$actionText = if ($actions.Count -gt 0) { $actions -join "; " } else { "Puuduvad" }
+
+$line = "[$timeStamp] STATUS=$status Spooler=$($spooler.Status -eq 'Running') DefenderRTP=$defenderRTP RDP3389Closed=$(-not $port3389Open) | Actions: $actionText"
+
+Add-Content -Path $healthLog -Value $line
+
+if ($status -eq "FAIL") {
+    if (-not (Test-Path $folderA)) { New-Item -Path $folderA -ItemType Directory | Out-Null }
+    $alertFile = Join-Path $folderA "ALERT.txt"
+    "ATTN: FAIL" | Out-File -FilePath $alertFile
+}
+
+$lastThree = Get-Content -Path $healthLog | Select-Object -Last 3
+$reportContent = "`nKoondstaatus:`n" + ($lastThree -join "`n")
+
+$reportContent | Out-File -FilePath $reportFile -Append
+
+Get-Content -Path $reportFile

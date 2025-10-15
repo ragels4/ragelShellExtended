@@ -1,0 +1,28 @@
+$reportFile = "C:\Lab\report.txt"
+
+function Test-Port {
+    param ($port)
+    $tcpClient = New-Object System.Net.Sockets.TcpClient
+    try {
+        $tcpClient.Connect("localhost", $port)
+        $tcpClient.Close()
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+$ports = @(3389, 7000)
+$results = @()
+
+foreach ($port in $ports) {
+    if (Test-Port -port $port) {
+        $results += "RDP port $port: avatud"
+    } else {
+        $results += "RDP port $port: suletud"
+    }
+}
+
+$results | Out-File -FilePath $reportFile
+
+Get-Content -Path $reportFile

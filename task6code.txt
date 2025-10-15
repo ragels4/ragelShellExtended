@@ -1,0 +1,22 @@
+$reportFile = "C:\Lab\report.txt"
+$timeLimit = (Get-Date).AddMinutes(-30)
+
+$events = Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4624
+    StartTime = $timeLimit
+} -MaxEvents 10
+
+if ($events.Count -gt 0) {
+    $firstEvent = $events[0]
+    $time = $firstEvent.TimeCreated
+    $xml = [xml]$firstEvent.ToXml()
+    $accountName = $xml.Event.EventData.Data | Where-Object { $_.Name -eq "TargetUserName" } | Select-Object -ExpandProperty '#text'
+    $report = "4624 found - Time: $time, Account: $accountName"
+} else {
+    $report = "4624: ei leitud"
+}
+
+$report | Out-File -FilePath $reportFile
+
+Get-Content -Path $reportFile

@@ -1,0 +1,23 @@
+$folderPath = "C:\Lab\A"
+$usernameFile = Join-Path $folderPath "username.txt"
+$reportFile = "C:\Lab\report.txt"
+
+$username = $env:USERNAME
+
+if (Test-Path $usernameFile) {
+    $username | Out-File -FilePath $usernameFile -Append
+} else {
+    $username | Out-File -FilePath $usernameFile
+}
+
+if ($username -like "student*") {
+    $role = "roll: student"
+} else {
+    $role = "roll: mitte student"
+}
+
+$report = $role
+$report | Out-File -FilePath $reportFile
+
+Get-Content -Path $reportFile
+Get-Content -Path $usernameFile

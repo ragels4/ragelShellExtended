@@ -1,0 +1,42 @@
+$folderPath = "C:\Lab\A"
+$reportFile = "C:\Lab\report.txt"
+$planFile = Join-Path $folderPath "plan.txt"
+
+if (-not (Test-Path $folderPath)) {
+    New-Item -Path $folderPath -ItemType Directory | Out-Null
+    $report = "Folder A created."
+} else {
+    $report = "Folder A already exists."
+}
+
+if (Test-Path $planFile) {
+    (Get-Date).ToString() | Out-File -FilePath $planFile -Append
+} else {
+    "Plan file created on $(Get-Date)" | Out-File -FilePath $planFile
+}
+
+$planLastWrite = (Get-Item $planFile).LastWriteTime
+$age = (Get-Date) - $planLastWrite
+
+if ($age.TotalDays -gt 1) {
+    $report += "`nplan.txt status: aegunud"
+} else {
+    $report += "`nplan.txt status: ajakohane"
+}
+
+for ($i=1; $i -le 5; $i++) {
+    $taskFile = Join-Path $folderPath "task$i.txt"
+    if (-not (Test-Path $taskFile)) {
+        New-Item -Path $taskFile -ItemType File | Out-Null
+    }
+}
+
+$files = Get-ChildItem -Path $folderPath | Where-Object { -not $_.PSIsContainer }
+$report += "`nFiles in $folderPath:"
+foreach ($file in $files) {
+    $report += "`n$file - Last modified: $($file.LastWriteTime)"
+}
+
+$report | Out-File -FilePath $reportFile
+
+Get-Content -Path $reportFile
