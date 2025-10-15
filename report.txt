@@ -1,0 +1,15 @@
+﻿Folder C:\Lab\A created.
+File plan.txt created.
+plan.txt is up-to-date.
+Created missing file task1.txt.
+Created missing file task2.txt.
+Created missing file task3.txt.
+Created missing file task4.txt.
+Created missing file task5.txt.
+Files in folder C:\Lab\A:
+  plan.txt - Last modified: 10/15/2025 14:50:20
+  task1.txt - Last modified: 10/15/2025 14:50:20
+  task2.txt - Last modified: 10/15/2025 14:50:20
+  task3.txt - Last modified: 10/15/2025 14:50:20
+  task4.txt - Last modified: 10/15/2025 14:50:20
+  task5.txt - Last modified: 10/15/2025 14:50:20
